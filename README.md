@@ -1,5 +1,5 @@
 # WTBB - Where's the bloat?
-"It is important to point fingers at the real source of the problem' - Matt Mathis
+"It is important to point fingers at the real source of the problem before crying 'Wolf!'" - Matt Mathis
 
   * a test tool for finding where bufferbloat is accumulating on the network
   *  implementing Apple's internet responsiveness tool and compatible with their backend
