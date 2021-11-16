@@ -4,7 +4,7 @@
   * a test tool for finding where bufferbloat is accumulating on the network
   *  implementing Apple's internet responsiveness tool and compatible with their backend
 
-#  where's the bloat?
+# Overview
 
 After generating and analyzing "responsiveness under working conditions",
 the next step is to figure out where all that data is accumulating.
@@ -19,9 +19,12 @@ the next step is to figure out where all that data is accumulating.
 
 # Prior Work
 
-mtr
-flent
-tcptrace
+* mtr
+* flent
+* wireshark
+* tcptrace
+* xplot
+* irtt
 
 Most of these tools reward fair queuing, not AQM, and it takes some setup to successfully monitor tcp RTTs in the flent tool. They also are fragile.
 
@@ -29,36 +32,45 @@ Most of these tools reward fair queuing, not AQM, and it takes some setup to suc
 
 ## Probing mechanism
 
-An ICMP unreachable message 
-Monitoring TCP_INFO
- - packets in flight
+* https "pings" within a flow
+* An ICMP unreachable message from dropping the ttl on an active flow
+* Monitoring TCP_INFO
+ - unacked packets in flight
+ - congestion events
+ - rtt
 
 # Procedural outline
 
 ## Warm up phase
 
-turn off garbage collection
-commit memory for entire test (calloc)
+* turn off garbage collection
+* commit memory for entire test (calloc)
+* send a few packets out to "warm up the wifi"
 
 ## Cool Down phase
 
-wait for completion
-get final socket statistics
-close file descriptors
-join critical data
-analyze the results
+* wait for completion
+* get final socket statistics
+* close file descriptors
+* join critical data
+* analyze the results
 
-## Reporting
+## Reporting Possibilities
 
-Bottleneck detection
-AQM detection
-FQ detection
-CC detection
-Jitter Metric
-RPM output
-Loss/ECN marking output
+* RPM metrics
+  - Bandwidth in each direction
+  - Revolutions per minute (average)
+  - Revolutions per minute (histogram)
+* Bottleneck detection
+* AQM detection
+* FQ detection
+* CC detection
+* Jitter Metric
 
-# data
+* RPM output compatible with exiting tools
+* Loss/ECN marking statistics
+
+## Data available from TCP_INFO
 
 tcpi_snd_msstcpi_snd_cwnd*tcpi_snd_unacked*ioctl(SIOCOUTQ)OS X**tcpi_maxsegtcpi_snd_cwnd-tcpi_snd_sbbytesFreeBSDtcpi_snd_msstcpi_snd_cwnd-ioctl(FIONWRITE)NetBSDtcpi_snd_msstcpi_snd_cwnd*-ioctl(FIONWRITE)17■calculate either of:⁃CWND - inflight⁃min(CWND - (inflight + unsent), 0)■units used in the calculation must be the same⁃NetBSD: fail*: units of values marked are packets, unmarked are octets **: sometimes the values of tcpi_* are returned as zeros
 
@@ -67,16 +79,13 @@ size_t get_suggested_write_size() {    getsockopt(fd, IPPROTO_TCP, TCP_INFO, &tc
 
 # Possible implementation Tricks
 
-cmsg SO_TIMESTAMP
-SO_PACING
-map the linux time page on top of itself to get kernel timestamps dynamically
-ringbuffer I/O (uring)
-packet exits and drops from the interface /sys/class/net/device
+* cmsg SO_TIMESTAMP
+* Also SO_PACING
+* map the linux time page on top of itself to get kernel timestamps dynamically
+* ringbuffer I/O (uring)
+* packet exits and drops from the interface /sys/class/net/device
 
 # futures
 
-override TCP's congestion window
-
-pacing
-
-
+* override TCP's congestion window?
+* pacing
