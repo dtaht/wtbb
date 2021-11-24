@@ -11,7 +11,7 @@ the next step is to figure out where all that data is accumulating.
 
 * In the application?
 * Socket Buffer?
-* network stack?
+* Network stack?
 * Local qdisc?
 * The device driver?
 * Next hop? or other hop?
@@ -25,6 +25,7 @@ the next step is to figure out where all that data is accumulating.
 * tcptrace
 * xplot
 * irtt
+* https://github.com/facebookarchive/fbtracert
 
 Most of these tools reward fair queuing, not AQM, and it takes some setup to successfully monitor tcp RTTs in the flent tool. They also are fragile.
 
